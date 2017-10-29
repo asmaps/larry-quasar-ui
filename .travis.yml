@@ -5,7 +5,7 @@ node_js:
   - "8"
 
 script:
-  - npm build
+  - quasar build
 
 deploy:
   provider: pages
@@ -14,5 +14,3 @@ deploy:
   local_dir: "dist"
   repo: "larry-quasar-ui-deploy"
   fqdn: "larry.asw.io"
-  on:
-    branch: gh-pages
