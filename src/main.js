@@ -36,9 +36,6 @@ else {
   axios.defaults.baseURL = 'https://frustrum.pictor.uberspace.de/larry/api'
 }
 
-// let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJleGFtcGxlIiwiZW1haWwiOiJjbG9ua3Nwb3RAYXNtYXBzLmRlIiwiZXhwIjoxNTA5MTQ3NjYxLCJpYXQiOjE1MDkwNjEyNjEsImlzcyI6ImNsb25rc3BvdCIsImp0aSI6IjNkYzMyYTdmYzAwN2VlMjYyNmJlYjAyNzUzNTljNmY2Iiwic3ViIjoiTmF0aXZlRXhjZXB0aW9uIn0.ayfXVNvmwF9a7bQE7ZnLUDkClvhrf65aYgqA3Q0pBKA'
-// axios.defaults.headers.common['Authorization'] = 'Bearer ' + token
-
 Object.defineProperty(Vue.prototype, '$http', { value: axios })
 
 Quasar.start(() => {

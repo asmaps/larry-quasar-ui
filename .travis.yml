@@ -5,7 +5,12 @@ node_js:
 
 notifications:
   email: false
-  irc: "irc.euirc.net#openclonk-dev"
+#  irc:
+#    channels:
+#      - "irc.euirc.net#openclonk-dev"
+#    use_notice: true
+#    template:
+#      - "%{repository} (%{commit}): %{message}"
 
 install:
   - npm install

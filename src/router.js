@@ -40,6 +40,11 @@ export default new VueRouter({
           name: 'upload-scenario',
           component: load('UploadScenario'),
         },
+        {
+          path: 'receive-token/:token',
+          name: 'receive-token',
+          component: load('FetchToken'),
+        },
       ]
     },
 
