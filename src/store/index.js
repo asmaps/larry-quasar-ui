@@ -22,6 +22,7 @@ export const store = new Vuex.Store({
       state.authToken = null
       state.decodedToken = {}
       delete axios.defaults.headers.common['Authorization']
+      LocalStorage.remove('authToken')
     }
   }
 })

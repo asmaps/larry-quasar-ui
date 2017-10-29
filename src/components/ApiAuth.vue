@@ -3,7 +3,8 @@
     <div v-if="!$store.state.decodedToken.username">
       <div>
         <h5>Clonkspot</h5>
-        <a :href="$http.defaults.baseURL + '/auth/clonkspot'">Clonkspot login</a>
+        <q-btn color="positive" @click="clonkspotLogin">Clonkspot login</q-btn>
+        <p class="text-negative" v-if="authFailed">Oups, something went wrong. Please try again</p>
       </div>
       <hr>
       <div>
@@ -22,7 +23,7 @@
 </template>
 
 <script>
-  import { QInput, QBtn, LocalStorage } from 'quasar'
+  import { QInput, QBtn, LocalStorage, openURL } from 'quasar'
 
   export default {
     components: {
@@ -34,6 +35,8 @@
         email: '',
         password: '',
         token: null,
+        authWindow: null,
+        authFailed: false,
       }
     },
     mounted () {
@@ -43,6 +46,10 @@
       }
     },
     methods: {
+      clonkspotLogin () {
+        this.authWindow = openURL(`${this.$http.defaults.baseURL}/auth/clonkspot`)
+        this.checkTokenLoop()
+      },
       larryLogin () {
         let that = this
         let params = {
@@ -56,7 +63,18 @@
           that.email = ''
           that.password = ''
         }).catch((error) => { console.error(error) })
-      }
+      },
+      checkTokenLoop () {
+        let token = LocalStorage.get.item('authToken')
+        console.log({token})
+        if (token) {
+          this.$store.commit('setAuthToken', { authToken: token })
+          this.authWindow = null
+        }
+        else {
+          setTimeout(this.checkTokenLoop, 500)
+        }
+      },
     },
   }
 </script>

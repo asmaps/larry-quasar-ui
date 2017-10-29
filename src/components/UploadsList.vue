@@ -9,7 +9,7 @@
       <q-card-separator />
       <q-card-main>
         <p class="text-faded description">
-          <truncate clamp="... read more" length="140" less="show less" :text="upload.description"></truncate>
+          <truncate clamp="... read more" :length="140" less="show less" :text="upload.description"></truncate>
         </p>
         <div>ID: {{ upload._id }}</div>
         <div v-if="upload.dependency.length === 0">

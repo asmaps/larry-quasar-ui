@@ -41,6 +41,7 @@
     watch: {
       tokenData: {
         handler: function (val, oldVal) {
+          console.log({val, oldVal})
           if (val !== oldVal) {
             if (val.invalid || !val.username) {
               this.tokenValid = false
@@ -49,6 +50,8 @@
               let that = this
               this.$http.get('/uploads', {headers: {Authorization: `Bearer ${this.routeToken}`}}).then(response => {
                 that.tokenValid = true
+                that.$store.commit('setAuthToken', { authToken: that.routeToken })
+                window.close()
               }).catch(error => {
                 console.warn(error)
                 that.tokenValid = false
