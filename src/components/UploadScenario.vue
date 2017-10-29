@@ -32,7 +32,7 @@
                     paramName="media"
                     :headers="{ Authorization: `Bearer ${$store.state.authToken}` }"
                     @vdropzone-success="uploadSuccess"
-                    acceptedFileTypes=".ocs,.ocf,.ocd">
+                    acceptedFileTypes=".ocs,.ocf,.ocd,.ocg,.ocr,.c4d,.c4g,.c4f,.c4r,.c4s,c4v">
           </dropzone>
           <div>
             <h6>Select a file to associate with your scenario:</h6>
