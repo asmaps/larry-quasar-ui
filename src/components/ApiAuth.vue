@@ -1,40 +1,69 @@
 <template>
   <div>
     <div v-if="!$store.state.decodedToken.username">
-      <div>
-        <h5>Clonkspot</h5>
-        <q-btn color="positive" @click="clonkspotLogin">Clonkspot login</q-btn>
-        <p class="text-negative" v-if="authFailed">Oups, something went wrong. Please try again</p>
-      </div>
-      <hr>
-      <div>
+      <div v-if="useLarryLogin" class="group">
         <h5>Larry Login</h5>
-        <q-input @keyup.enter="larryLogin" v-model="email" name="user" float-label="Email" />
-        <q-input @keyup.enter="larryLogin" v-model="password" name="pass" type="password" float-label="Password" />
-        <q-btn color="positive" @click="larryLogin" icon="fa-sign-in">Larry login</q-btn>
+        <div>
+          <q-input @keyup.enter="larryLogin" v-model="email" name="user" float-label="Email" />
+          <q-input @keyup.enter="larryLogin" v-model="password" name="pass" type="password" float-label="Password" />
+          <q-btn color="positive" @click="larryLogin" icon="fa-sign-in">Larry login</q-btn>
+        </div>
+        <div class="text-right">
+          <q-btn color="tertiary" small outline @click="useLarryLogin = false">Log in via Clonkspot</q-btn>
+        </div>
+      </div>
+      <div v-else class="group">
+        <q-btn color="positive" @click="clonkspotLogin">Log in via Clonkspot</q-btn>
+        <p class="text-negative" v-if="authFailed">Oups, something went wrong. Please try again</p>
+        <div class="text-right">
+          <q-btn color="tertiary" small outline @click="useLarryLogin = true">Log in via Larry</q-btn>
+        </div>
       </div>
     </div>
     <div v-else>
-      <p>Hi {{ $store.state.decodedToken.username }}</p>
-      <p>You have successfully logged in!</p>
-      <q-btn color="negative" outline small icon="fa-sign-out" @click="$store.commit('logout')">Logout</q-btn>
+      <q-card>
+        <q-card-title class="bg-positive text-white">
+          Hi {{ $store.state.decodedToken.username }}
+        </q-card-title>
+        <q-card-separator />
+        <q-card-main>
+          <p>You have successfully logged in!</p>
+          <q-btn color="negative" outline small icon="fa-sign-out" @click="$store.commit('logout')">Logout</q-btn>
+        </q-card-main>
+      </q-card>
     </div>
   </div>
 </template>
 
 <script>
-  import { QInput, QBtn, LocalStorage, openURL } from 'quasar'
+  import {
+    QCard,
+    QCardTitle,
+    QCardSeparator,
+    QCardMain,
+    QCardActions,
+    QInput,
+    QBtn,
+    LocalStorage,
+    openURL
+  } from 'quasar'
 
   export default {
     components: {
       QInput,
       QBtn,
+      QCard,
+      QCardTitle,
+      QCardSeparator,
+      QCardMain,
+      QCardActions,
     },
     data () {
       return {
         email: '',
         password: '',
         token: null,
+        useLarryLogin: false,
         authWindow: null,
         authFailed: false,
       }
@@ -64,11 +93,11 @@
           that.password = ''
         }).catch((error) => { console.error(error) })
       },
-      checkTokenLoop () {
+      checkTokenLoop (retryCount) {
         let token = LocalStorage.get.item('authToken')
-        console.log({token})
         if (token) {
           this.$store.commit('setAuthToken', { authToken: token })
+          this.authWindow.close()
           this.authWindow = null
         }
         else {

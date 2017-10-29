@@ -28,12 +28,19 @@ export default new VueRouter({
     {
       path: '/',
       component: load('Index'),
-      redirect: {name: 'dashboard'},
+      redirect: {name: 'upload-list'},
       children: [
         {
-          path: 'dashboard',
-          name: 'dashboard',
-          component: load('Dashboard'),
+          path: 'uploads',
+          name: 'upload-list',
+          component: load('UploadList'),
+          children: [
+            {
+              path: ':uploadId',
+              name: 'upload-detail',
+              component: load('UploadDetail'),
+            },
+          ]
         },
         {
           path: 'upload-scenario',

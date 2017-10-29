@@ -4,7 +4,7 @@
     view="lHh Lpr fff"
     :left-class="{'bg-grey-2': true}"
   >
-    <q-toolbar slot="header" class="glossy">
+    <q-toolbar slot="header">
       <q-btn
         v-if="false"
         flat
@@ -20,8 +20,8 @@
     </q-toolbar>
 
     <q-tabs slot="navigation">
-      <q-route-tab slot="title" icon="fa-home" :to="{name: 'dashboard'}" replace hide="icon" label="Dashboard" />
-      <q-route-tab slot="title" icon="fa-upload" :to="{name: 'upload-scenario'}" replace hide="icon" label="Upload" />
+      <q-route-tab slot="title" icon="fa-list" :to="{name: 'upload-list'}" replace hide="icon" label="Uploads list" />
+      <q-route-tab slot="title" icon="fa-upload" :to="{name: 'upload-scenario'}" replace hide="icon" label="New Upload" />
     </q-tabs>
 
     <div slot="left" v-if="false">

@@ -3,10 +3,9 @@
     <div v-if="!tokenValid">
       <h6 class="text-negative">Received an invalid token!</h6>
       <p>{{ tokenData.message }}</p>
-      <p>{{ $store.state.authToken }}</p>
     </div>
     <div v-else>
-      <pre>{{ JSON.stringify(tokenData, null, 2) }}</pre>
+      <h6 class="text-success">you have successfully logged in. You can close this window now!</h6>
     </div>
   </div>
 </template>
