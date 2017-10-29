@@ -2,6 +2,9 @@
 
 > The Web UI for Larry, the mod platform of OpenClonk
 
+[![Build
+Status](https://travis-ci.org/asmaps/larry-quasar-ui.svg?branch=master)](https://travis-ci.org/asmaps/larry-quasar-ui)
+
 ## Build Setup
 
 ``` bash

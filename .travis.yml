@@ -1,0 +1,18 @@
+language: node_js
+
+node_js:
+  - "6"
+  - "7"
+  - "8"
+
+script:
+  - npm build
+
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN
+  local_dir: "dist"
+  fqdn: "larry.asw.io"
+  on:
+    branch: gh-pages
