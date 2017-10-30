@@ -63,8 +63,7 @@
           <div class="group" v-else>
             <div v-for="d of upload.dependency"
                  :key="d._id">
-              <q-btn @click="$router.push({name: 'upload-detail', params: {uploadId: d._id}})"
-                     outline>
+              <q-btn @click="$router.push({name: 'upload-detail', params: {uploadId: d._id}})" no-caps outline>
                 {{ d.title }}
               </q-btn>
             </div>
@@ -89,9 +88,10 @@
                v-for="fid of upload.file"
                :key="fid._id">
             <q-btn loader
+                   no-caps
                    color="primary"
                    :percentage="(downloadProgresses[fid._id] || {}).percentage"
-                   @click="(event, done) => {downloadMedia(fid._id, done)}">
+                   @click="(event, done) => {downloadMedia(fid._id, fid.filename, done)}">
               {{ fid.filename }} ({{ fid.length|prettyBytes }})
               <span slot="loading">Downloading...</span>
             </q-btn>
@@ -205,7 +205,7 @@
           ]
         })
       },
-      downloadMedia (mediaId, done) {
+      downloadMedia (mediaId, filename, done) {
         console.log({mediaId, done})
         let that = this
         this.$set(this.downloadProgresses, mediaId, {})
@@ -220,7 +220,7 @@
             onDownloadProgress: progressEvent => { that.downloadProgress(mediaId, progressEvent) },
           }
         ).then((response) => {
-          FileSaver.saveAs(response.data, mediaId)
+          FileSaver.saveAs(response.data, filename)
           that.downloadProgresses[mediaId].done()
           that.downloadProgresses[mediaId].percentage = 100
         })
