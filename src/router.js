@@ -43,9 +43,9 @@ export default new VueRouter({
           ]
         },
         {
-          path: 'upload-scenario',
-          name: 'upload-scenario',
-          component: load('UploadScenario'),
+          path: 'upload-create',
+          name: 'upload-create',
+          component: load('UploadCreate'),
         },
         {
           path: 'receive-token/:token',

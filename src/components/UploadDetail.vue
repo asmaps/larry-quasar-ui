@@ -1,12 +1,12 @@
 <template>
   <div>
-    <q-btn @click="$router.push({name: 'upload-list'})" outline icon="fa-list">Back to list</q-btn>
+    <q-btn class="pull-right" @click="$router.push({name: 'upload-list'})" outline icon="fa-list">Back to list</q-btn>
     <q-transition enter="bounceInUp">
-      <div v-if="upload">
-        <q-card>
+      <div v-if="upload" class="row">
+        <q-card class="col-6">
           <q-card-media v-if="upload.pic" overlay-position="top">
             <q-card-title slot="overlay">
-              {{ upload.title }}
+              Mod: {{ upload.title }}
               <span slot="subtitle">by {{ upload.author.username }}</span>
               <span slot="right" class="text-white" style="margin-left: 3rem">updated {{ upload.updatedAt | moment("from") }}</span>
             </q-card-title>
@@ -19,35 +19,111 @@
           </q-card-title>
           <q-card-separator />
           <q-card-main>
+            <p class="text-faded description">
+              {{ upload.description }}
+            </p>
+          </q-card-main>
+          <q-card-actions>
+            <q-btn v-if="$store.state.decodedToken.username === upload.author.username"
+                   outline
+                   color="negative"
+                   icon="fa-trash-o"
+                   @click="deleteUpload(upload)">
+              Delete mod
+            </q-btn>
+          </q-card-actions>
+          <q-card-media v-if="upload.pic" overlay-position="bottom">
+            <q-card-title slot="overlay">
+              Voting
+            </q-card-title>
+            <q-parallax :src="`${$http.defaults.baseURL}/media/${upload.pic}`" :height="150">
+            </q-parallax>
+          </q-card-media>
+          <q-card-title v-else>
+            Voting
+          </q-card-title>
+          <q-card-main>
             <div class="group">
-              <p class="text-faded description">
-                {{ upload.description }}
-              </p>
               <upload-voter :upload="upload" @voted="refresh"></upload-voter>
-              <p>ID: {{ upload._id }}</p>
-              <p v-if="upload.dependency.length === 0">
-                No dependencies.
-              </p>
-              <div v-else>
-                <h6>Dependencies</h6>
-                <div class="group">
-                  <q-btn v-for="did of upload.dependency"
-                         :key="did"
-                         @click="$router.push({name: 'upload-detail', params: {uploadId: did}})"
-                         v-if="dependencies[did]">
-                    {{ dependencies[did].title }}
-                  </q-btn>
-                </div>
+            </div>
+          </q-card-main>
+          <q-card-media v-if="upload.pic" overlay-position="bottom">
+            <q-card-title slot="overlay">
+              Dependencies
+            </q-card-title>
+            <q-parallax :src="`${$http.defaults.baseURL}/media/${upload.pic}`" :height="150">
+            </q-parallax>
+          </q-card-media>
+          <q-card-title v-else>
+            Dependencies
+          </q-card-title>
+          <q-card-main>
+            <q-btn disabled flat v-if="upload.dependency.length === 0">
+              No dependencies
+            </q-btn>
+            <div class="group" v-else>
+              <div v-for="did of upload.dependency"
+                   :key="did">
+                <q-btn @click="$router.push({name: 'upload-detail', params: {uploadId: did}})"
+                       outline
+                       v-if="dependencies[did]">
+                  {{ dependencies[did].title }}
+                </q-btn>
               </div>
             </div>
           </q-card-main>
-          <q-card-actions>
-            <q-btn v-if="$store.state.decodedToken.username === upload.author.username" flat color="negative" icon="fa-trash" @click="deleteUpload(upload)"></q-btn>
-          </q-card-actions>
+          <q-card-media v-if="upload.pic" overlay-position="bottom">
+            <q-card-title slot="overlay">
+              File downloads
+            </q-card-title>
+            <q-parallax :src="`${$http.defaults.baseURL}/media/${upload.pic}`" :height="150">
+            </q-parallax>
+          </q-card-media>
+          <q-card-title v-else>
+            File downloads
+          </q-card-title>
+          <q-card-main>
+            <q-btn disabled flat v-if="upload.file.length === 0">
+              No files
+            </q-btn>
+            <div class="group"
+                 v-else
+                 v-for="fid of upload.file"
+                 :key="fid">
+              <q-btn loader
+                     color="primary"
+                     :percentage="(downloadProgresses[fid] || {}).percentage"
+                     @click="(event, done) => {downloadMedia(fid, done)}">
+                {{ fid }}
+                <span slot="loading">Downloading...</span>
+              </q-btn>
+              <span v-if="downloadProgresses[fid]">
+                <q-transition enter="fadeIn" leave="fadeOut" mode="out-in">
+                  <span key="sizeDownloaded" v-if="downloadProgresses[fid].percentage < 100">
+                    {{ downloadProgresses[fid].loaded|prettyBytes }} / {{ downloadProgresses[fid].total|prettyBytes }}
+                  </span>
+                  <span key="downloadDone" v-else><i class="fa fa-check fa-2x text-positive"></i></span>
+                </q-transition>
+              </span>
+            </div>
+          </q-card-main>
+          <q-card-media v-if="upload.pic" overlay-position="bottom">
+            <q-card-title slot="overlay">
+              Other data
+            </q-card-title>
+            <q-parallax :src="`${$http.defaults.baseURL}/media/${upload.pic}`" :height="150">
+            </q-parallax>
+          </q-card-media>
+          <q-card-title v-else>
+            Other data
+          </q-card-title>
+          <q-card-main>
+            <p>ID: {{ upload._id }}</p>
+          </q-card-main>
         </q-card>
       </div>
       <div v-else key="loader">
-        <q-spinner size="50"></q-spinner> Loading scenario data...
+        <q-spinner size="50"></q-spinner> Loading mod data...
       </div>
     </q-transition>
   </div>
@@ -55,6 +131,7 @@
 
 <script>
   import {
+    Dialog,
     QBtn,
     QCard,
     QCardTitle,
@@ -63,10 +140,12 @@
     QCardActions,
     QCardMedia,
     QIcon,
+    QParallax,
     QTransition,
     QSpinner
   } from 'quasar'
   import UploadVoter from './UploadVoter'
+  import FileSaver from 'file-saver'
 
   export default {
     components: {
@@ -77,6 +156,7 @@
       QCardMain,
       QCardMedia,
       QCardActions,
+      QParallax,
       QIcon,
       QTransition,
       QSpinner,
@@ -103,7 +183,7 @@
             for (let d of val.dependency) {
               this.$http.get(`/uploads/${d}`).then(response => {
                 let upload = response.data
-                that.$set(that.dependencies, d, upload)
+                that.$set(that.dependencies, upload._id, upload)
               })
             }
           }
@@ -115,6 +195,8 @@
       return {
         upload: null,
         dependencies: {},
+        fileData: {},
+        downloadProgresses: {},
       }
     },
     methods: {
@@ -126,8 +208,47 @@
       },
       deleteUpload () {
         let that = this
-        this.$http.delete(`/uploads/${this.routeId}`).then(response => that.$router.push({name: 'detail-list'}))
+        Dialog.create({
+          title: 'Delete mod?',
+          message: `Do you really want to delete the mod ${this.upload.title}?<br>This cannot be undone!`,
+          buttons: [
+            'Cancel',
+            {
+              label: '<i class="fa fa-trash-o"></i> Yes, delete!',
+              color: 'negative',
+              outline: true,
+              handler () {
+                that.$http.delete(`/uploads/${that.routeId}`).then(response => that.$router.push({name: 'upload-list'}))
+              }
+            }
+          ]
+        })
       },
+      downloadMedia (mediaId, done) {
+        console.log({mediaId, done})
+        let that = this
+        this.$set(this.downloadProgresses, mediaId, {})
+        this.$set(this.downloadProgresses[mediaId], 'done', done)
+        this.$set(this.downloadProgresses[mediaId], 'percentage', 0)
+        this.$set(this.downloadProgresses[mediaId], 'loaded', 0)
+        this.$set(this.downloadProgresses[mediaId], 'total', 0)
+        this.$http.get(
+          `${this.$http.defaults.baseURL}/media/${mediaId}`,
+          {
+            responseType: 'blob',
+            onDownloadProgress: progressEvent => { that.downloadProgress(mediaId, progressEvent) },
+          }
+        ).then((response) => {
+          FileSaver.saveAs(response.data, mediaId)
+          that.downloadProgresses[mediaId].done()
+          that.downloadProgresses[mediaId].percentage = 100
+        })
+      },
+      downloadProgress (mediaId, progressEvent) {
+        this.downloadProgresses[mediaId].percentage = progressEvent.loaded * 100 / progressEvent.total
+        this.downloadProgresses[mediaId].loaded = progressEvent.loaded
+        this.downloadProgresses[mediaId].total = progressEvent.total
+      }
     }
   }
 </script>

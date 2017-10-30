@@ -15,10 +15,12 @@ import axios from 'axios'
 import Quasar from 'quasar'
 import router from './router'
 import VueMoment from 'vue-moment'
+import filters from './filters'
 
 Vue.config.productionTip = false
 Vue.use(Quasar) // Install Quasar Framework
 Vue.use(VueMoment)
+Vue.use(filters)
 
 if (__THEME === 'mat') {
   require('quasar-extras/roboto-font')

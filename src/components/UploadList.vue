@@ -2,7 +2,7 @@
   <div>
     <q-transition :enter="showList ? 'fadeInLeft' : 'fadeInRight'" :leave="showList ? 'fadeOutRight' : 'fadeOutLeft'" mode="out-in" duration="500">
       <div v-if="showList">
-        <h4>Uploads</h4>
+        <h4>Mods</h4>
         <q-data-table
           :data="uploads"
           :config="tableConfig"
@@ -11,9 +11,17 @@
           <template slot='col-action' slot-scope='cell'>
             <q-btn color="primary"
                    small
+                   outline
                    icon="fa-info-circle"
                    @click="$router.push({name: 'upload-detail', params: {uploadId: cell.row._id}})">
-              Show</q-btn>
+              Details</q-btn>
+            <q-btn color="negative"
+                   outline
+                   small
+                   icon="fa-trash-o"
+                   v-if="cell.row.author.username === $store.state.decodedToken.username"
+                   @click="deleteUpload(cell.row)">
+              Delete</q-btn>
           </template>
           <template slot='col-voting' slot-scope='cell'>
             {{ cell.data.sum }} <i class="fa" :class="{'fa-caret-up text-positive': cell.data.sum > 0, 'fa-caret-down text-negative': cell.data.sum < 0, 'fa-sort text-dark': cell.data.sum === 0}"></i>
@@ -27,6 +35,7 @@
 
 <script>
   import {
+    Dialog,
     QBtn,
     QDataTable,
     QTransition,
@@ -41,12 +50,19 @@
       QTransition,
       Truncate,
     },
-    mounted () {
-      this.refresh()
-    },
     computed: {
       showList () {
         return this.$route.name === 'upload-list'
+      }
+    },
+    watch: {
+      showList: {
+        handler (val, oldVal) {
+          if (val && val !== oldVal) {
+            this.refresh()
+          }
+        },
+        immediate: true,
       }
     },
     data () {
@@ -65,7 +81,7 @@
           {label: 'Author', field: 'author', width: '100px', format: el => el.username},
           {label: 'Voting', field: 'voting', width: '100px'},
           {label: 'Last update', field: 'updatedAt', width: '100px', format: el => moment(el).from()},
-          {label: 'Actions', field: 'action', width: '100px'},
+          {label: 'Actions', field: 'action', width: '200px'},
         ],
       }
     },
@@ -82,7 +98,21 @@
       },
       deleteUpload (upload) {
         let that = this
-        this.$http.delete(`/uploads/${upload._id}`).then(response => that.refresh())
+        Dialog.create({
+          title: 'Delete mod?',
+          message: `Do you really want to delete the mod ${upload.title}?<br>This cannot be undone!`,
+          buttons: [
+            'Cancel',
+            {
+              label: '<i class="fa fa-trash-o"></i> Yes, delete!',
+              color: 'negative',
+              outline: true,
+              handler () {
+                this.$http.delete(`/uploads/${upload._id}`).then(response => that.refresh())
+              }
+            }
+          ]
+        })
       },
     },
   }

@@ -27,8 +27,18 @@
     </q-toolbar>
 
     <q-tabs slot="navigation">
-      <q-route-tab slot="title" icon="fa-list" :to="{name: 'upload-list'}" replace hide="icon" label="Uploads list" />
-      <q-route-tab slot="title" icon="fa-upload" :to="{name: 'upload-scenario'}" replace hide="icon" label="New Upload" />
+      <q-route-tab slot="title"
+                   icon="fa-list"
+                   :to="{name: 'upload-list'}"
+                   replace
+                   hide="icon"
+                   label="Browse mods" />
+
+      <q-route-tab slot="title"
+                   icon="fa-upload"
+                   :to="{name: 'upload-create'}"
+                   replace hide="icon"
+                   label="Upload mod" />
     </q-tabs>
 
     <div slot="left" v-if="false">

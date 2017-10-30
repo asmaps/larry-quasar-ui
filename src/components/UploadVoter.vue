@@ -1,13 +1,14 @@
 <template>
   <div>
-    <div class="flex row items-center" v-if="$store.getters.loggedIn">
-      <div>
-        <q-btn color="negative" round small icon="fa-thumbs-down" @click="vote(-1)"></q-btn>
-      </div>
-      <h5 style="margin: 0 1rem">{{ upload.voting.sum }}</h5>
-      <div>
-        <q-btn color="positive" round small icon="fa-thumbs-up" @click="vote(1)"></q-btn>
-      </div>
+    <div class="flex row items-center group" v-if="$store.getters.loggedIn">
+      <h5 style="margin: 0 1rem">
+        <i class="fa"
+           :class="{'fa-caret-up text-positive': upload.voting.sum > 0, 'fa-caret-down text-negative': upload.voting.sum < 0, 'fa-sort text-dark': upload.voting.sum === 0}">
+        </i>
+        {{ upload.voting.sum }}
+      </h5>
+      <q-btn color="negative" round small icon="fa-thumbs-down" @click="vote(-1)"></q-btn>
+      <q-btn color="positive" round small icon="fa-thumbs-up" @click="vote(1)"></q-btn>
     </div>
     <div class="group" v-else>
       <i class="fa"
