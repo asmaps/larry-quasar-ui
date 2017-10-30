@@ -23,6 +23,7 @@
               <p class="text-faded description">
                 {{ upload.description }}
               </p>
+              <upload-voter :upload="upload" @voted="refresh"></upload-voter>
               <p>ID: {{ upload._id }}</p>
               <p v-if="upload.dependency.length === 0">
                 No dependencies.
@@ -32,7 +33,7 @@
                 <div class="group">
                   <q-btn v-for="did of upload.dependency"
                          :key="did"
-                         @click="$router.push({name: 'upload-detail', params: {uploadId: upload._id}})"
+                         @click="$router.push({name: 'upload-detail', params: {uploadId: did}})"
                          v-if="dependencies[did]">
                     {{ dependencies[did].title }}
                   </q-btn>
@@ -65,6 +66,7 @@
     QTransition,
     QSpinner
   } from 'quasar'
+  import UploadVoter from './UploadVoter'
 
   export default {
     components: {
@@ -78,6 +80,7 @@
       QIcon,
       QTransition,
       QSpinner,
+      UploadVoter,
     },
     computed: {
       routeId () {
@@ -88,11 +91,7 @@
       routeId: {
         handler (val, oldVal) {
           if (val && val !== oldVal) {
-            let that = this
-            this.upload = null
-            this.$http.get(`/uploads/${val}`).then(response => {
-              that.upload = response.data
-            })
+            this.refresh()
           }
         },
         immediate: true,
@@ -118,6 +117,18 @@
         dependencies: {},
       }
     },
+    methods: {
+      refresh () {
+        let that = this
+        this.$http.get(`/uploads/${this.routeId}`).then(response => {
+          that.upload = response.data
+        })
+      },
+      deleteUpload () {
+        let that = this
+        this.$http.delete(`/uploads/${this.routeId}`).then(response => that.$router.push({name: 'detail-list'}))
+      },
+    }
   }
 </script>
 

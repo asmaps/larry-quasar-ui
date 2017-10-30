@@ -11,6 +11,9 @@ export const store = new Vuex.Store({
     authToken: null,
     decodedToken: {},
   },
+  getters: {
+    loggedIn: state => Boolean(state.decodedToken.username),
+  },
   mutations: {
     setAuthToken (state, { authToken }) {
       state.authToken = authToken

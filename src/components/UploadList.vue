@@ -15,6 +15,9 @@
                    @click="$router.push({name: 'upload-detail', params: {uploadId: cell.row._id}})">
               Show</q-btn>
           </template>
+          <template slot='col-voting' slot-scope='cell'>
+            {{ cell.data.sum }} <i class="fa" :class="{'fa-caret-up text-positive': cell.data.sum > 0, 'fa-caret-down text-negative': cell.data.sum < 0, 'fa-sort text-dark': cell.data.sum === 0}"></i>
+          </template>
         </q-data-table>
       </div>
       <router-view></router-view>
@@ -60,6 +63,7 @@
           {label: 'Title', field: 'title', width: '100px'},
           {label: 'Description', field: 'description', width: '500px'},
           {label: 'Author', field: 'author', width: '100px', format: el => el.username},
+          {label: 'Voting', field: 'voting', width: '100px'},
           {label: 'Last update', field: 'updatedAt', width: '100px', format: el => moment(el).from()},
           {label: 'Actions', field: 'action', width: '100px'},
         ],
