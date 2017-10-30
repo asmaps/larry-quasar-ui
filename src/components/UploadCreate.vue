@@ -4,7 +4,7 @@
       <h5>Upload your own mod</h5>
       <q-stepper ref="stepper" style="max-width: 800px" alternative-labels>
         <q-step default name="data" title="Enter data" :error="errors.slug || errors.title || errors.description">
-          <p>Please enter a title and description for your mod.</p>
+          <p>Please enter a title and description for your mod</p>
           <div class="text-negative" v-if="errors.slug">
             {{ errors.slug }}
           </div>
@@ -221,7 +221,9 @@
     },
     methods: {
       deleteFile (idx) {
+        let file = this.files[idx]
         this.files.splice(idx, 1)
+        this.$http.delete(`${this.$http.defaults.baseURL}/media/${file._id}`)
       },
       picUploadSuccess (file, response) {
         this.pic = response

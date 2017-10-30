@@ -89,18 +89,18 @@
             <div class="group"
                  v-else
                  v-for="fid of upload.file"
-                 :key="fid">
+                 :key="fid._id">
               <q-btn loader
                      color="primary"
-                     :percentage="(downloadProgresses[fid] || {}).percentage"
-                     @click="(event, done) => {downloadMedia(fid, done)}">
-                {{ fid }}
+                     :percentage="(downloadProgresses[fid._id] || {}).percentage"
+                     @click="(event, done) => {downloadMedia(fid._id, done)}">
+                {{ fid.filename }} ({{ fid.length|prettyBytes }})
                 <span slot="loading">Downloading...</span>
               </q-btn>
-              <span v-if="downloadProgresses[fid]">
+              <span v-if="downloadProgresses[fid._id]">
                 <q-transition enter="fadeIn" leave="fadeOut" mode="out-in">
-                  <span key="sizeDownloaded" v-if="downloadProgresses[fid].percentage < 100">
-                    {{ downloadProgresses[fid].loaded|prettyBytes }} / {{ downloadProgresses[fid].total|prettyBytes }}
+                  <span key="sizeDownloaded" v-if="downloadProgresses[fid._id].percentage < 100">
+                    {{ downloadProgresses[fid._id].loaded|prettyBytes }} / {{ downloadProgresses[fid._id].total|prettyBytes }}
                   </span>
                   <span key="downloadDone" v-else><i class="fa fa-check fa-2x text-positive"></i></span>
                 </q-transition>
