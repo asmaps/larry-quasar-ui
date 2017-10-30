@@ -1,103 +1,101 @@
 <template>
   <div>
     <q-btn class="pull-right" @click="$router.push({name: 'upload-list'})" outline icon="fa-list">Back to list</q-btn>
-    <q-transition enter="bounceInUp">
-      <div v-if="upload" class="row">
-        <q-card class="col-6">
-          <q-card-media v-if="upload.pic" overlay-position="top">
-            <q-card-title slot="overlay">
-              Mod: {{ upload.title }}
-              <span slot="subtitle">by {{ upload.author.username }}</span>
-              <span slot="right" class="text-white" style="margin-left: 3rem">updated {{ upload.updatedAt | moment("from") }}</span>
-            </q-card-title>
-            <img :src="`${$http.defaults.baseURL}/media/${upload.pic}`">
-          </q-card-media>
-          <q-card-title class="bg-positive text-white" v-else>
-            {{ upload.title }}
-            <span slot="subtitle" class="text-light">by {{ upload.author.username }}</span>
-            <span slot="right" class="text-light" style="margin-left: 3rem">updated {{ upload.updatedAt | moment("from") }}</span>
+    <div v-if="upload" class="row">
+      <q-card class="col-6">
+        <q-card-media v-if="upload.pic" overlay-position="top">
+          <q-card-title slot="overlay">
+            Mod: {{ upload.title }}
+            <span slot="subtitle">by {{ upload.author.username }}</span>
+            <span slot="right" class="text-white" style="margin-left: 3rem">updated {{ upload.updatedAt | moment("from") }}</span>
           </q-card-title>
-          <q-card-separator />
-          <q-card-main>
-            <p class="text-faded description">
-              {{ upload.description }}
-            </p>
-          </q-card-main>
-          <q-card-actions>
-            <q-btn v-if="$store.state.decodedToken.username === upload.author.username"
-                   outline
-                   color="negative"
-                   icon="fa-trash-o"
-                   @click="deleteUpload(upload)">
-              Delete mod
-            </q-btn>
-          </q-card-actions>
-          <q-card-media v-if="upload.pic" overlay-position="bottom">
-            <q-card-title slot="overlay">
-              Voting
-            </q-card-title>
-            <q-parallax :src="`${$http.defaults.baseURL}/media/${upload.pic}`" :height="150">
-            </q-parallax>
-          </q-card-media>
-          <q-card-title v-else>
+          <img :src="`${$http.defaults.baseURL}/media/${upload.pic}`">
+        </q-card-media>
+        <q-card-title class="bg-positive text-white" v-else>
+          {{ upload.title }}
+          <span slot="subtitle" class="text-light">by {{ upload.author.username }}</span>
+          <span slot="right" class="text-light" style="margin-left: 3rem">updated {{ upload.updatedAt | moment("from") }}</span>
+        </q-card-title>
+        <q-card-separator />
+        <q-card-main>
+          <p class="text-faded description">
+            {{ upload.description }}
+          </p>
+        </q-card-main>
+        <q-card-actions>
+          <q-btn v-if="$store.state.decodedToken.username === upload.author.username"
+                 outline
+                 color="negative"
+                 icon="fa-trash-o"
+                 @click="deleteUpload(upload)">
+            Delete mod
+          </q-btn>
+        </q-card-actions>
+        <q-card-media v-if="upload.pic" overlay-position="bottom">
+          <q-card-title slot="overlay">
             Voting
           </q-card-title>
-          <q-card-main>
-            <div class="group">
-              <upload-voter :upload="upload" @voted="refresh"></upload-voter>
-            </div>
-          </q-card-main>
-          <q-card-media v-if="upload.pic" overlay-position="bottom">
-            <q-card-title slot="overlay">
-              Dependencies
-            </q-card-title>
-            <q-parallax :src="`${$http.defaults.baseURL}/media/${upload.pic}`" :height="150">
-            </q-parallax>
-          </q-card-media>
-          <q-card-title v-else>
+          <q-parallax :src="`${$http.defaults.baseURL}/media/${upload.pic}`" :height="150">
+          </q-parallax>
+        </q-card-media>
+        <q-card-title v-else>
+          Voting
+        </q-card-title>
+        <q-card-main>
+          <div class="group">
+            <upload-voter :upload="upload" @voted="refresh"></upload-voter>
+          </div>
+        </q-card-main>
+        <q-card-media v-if="upload.pic" overlay-position="bottom">
+          <q-card-title slot="overlay">
             Dependencies
           </q-card-title>
-          <q-card-main>
-            <q-btn disabled flat v-if="upload.dependency.length === 0">
-              No dependencies
-            </q-btn>
-            <div class="group" v-else>
-              <div v-for="did of upload.dependency"
-                   :key="did">
-                <q-btn @click="$router.push({name: 'upload-detail', params: {uploadId: did}})"
-                       outline
-                       v-if="dependencies[did]">
-                  {{ dependencies[did].title }}
-                </q-btn>
-              </div>
+          <q-parallax :src="`${$http.defaults.baseURL}/media/${upload.pic}`" :height="150">
+          </q-parallax>
+        </q-card-media>
+        <q-card-title v-else>
+          Dependencies
+        </q-card-title>
+        <q-card-main>
+          <q-btn disabled flat v-if="upload.dependency.length === 0">
+            No dependencies
+          </q-btn>
+          <div class="group" v-else>
+            <div v-for="d of upload.dependency"
+                 :key="d._id">
+              <q-btn @click="$router.push({name: 'upload-detail', params: {uploadId: d._id}})"
+                     outline>
+                {{ d.title }}
+              </q-btn>
             </div>
-          </q-card-main>
-          <q-card-media v-if="upload.pic" overlay-position="bottom">
-            <q-card-title slot="overlay">
-              File downloads
-            </q-card-title>
-            <q-parallax :src="`${$http.defaults.baseURL}/media/${upload.pic}`" :height="150">
-            </q-parallax>
-          </q-card-media>
-          <q-card-title v-else>
+          </div>
+        </q-card-main>
+        <q-card-media v-if="upload.pic" overlay-position="bottom">
+          <q-card-title slot="overlay">
             File downloads
           </q-card-title>
-          <q-card-main>
-            <q-btn disabled flat v-if="upload.file.length === 0">
-              No files
+          <q-parallax :src="`${$http.defaults.baseURL}/media/${upload.pic}`" :height="150">
+          </q-parallax>
+        </q-card-media>
+        <q-card-title v-else>
+          File downloads
+        </q-card-title>
+        <q-card-main>
+          <q-btn disabled flat v-if="upload.file.length === 0">
+            No files
+          </q-btn>
+          <div class="group"
+               v-else
+               v-for="fid of upload.file"
+               :key="fid._id">
+            <q-btn loader
+                   color="primary"
+                   :percentage="(downloadProgresses[fid._id] || {}).percentage"
+                   @click="(event, done) => {downloadMedia(fid._id, done)}">
+              {{ fid.filename }} ({{ fid.length|prettyBytes }})
+              <span slot="loading">Downloading...</span>
             </q-btn>
-            <div class="group"
-                 v-else
-                 v-for="fid of upload.file"
-                 :key="fid._id">
-              <q-btn loader
-                     color="primary"
-                     :percentage="(downloadProgresses[fid._id] || {}).percentage"
-                     @click="(event, done) => {downloadMedia(fid._id, done)}">
-                {{ fid.filename }} ({{ fid.length|prettyBytes }})
-                <span slot="loading">Downloading...</span>
-              </q-btn>
-              <span v-if="downloadProgresses[fid._id]">
+            <span v-if="downloadProgresses[fid._id]">
                 <q-transition enter="fadeIn" leave="fadeOut" mode="out-in">
                   <span key="sizeDownloaded" v-if="downloadProgresses[fid._id].percentage < 100">
                     {{ downloadProgresses[fid._id].loaded|prettyBytes }} / {{ downloadProgresses[fid._id].total|prettyBytes }}
@@ -105,27 +103,26 @@
                   <span key="downloadDone" v-else><i class="fa fa-check fa-2x text-positive"></i></span>
                 </q-transition>
               </span>
-            </div>
-          </q-card-main>
-          <q-card-media v-if="upload.pic" overlay-position="bottom">
-            <q-card-title slot="overlay">
-              Other data
-            </q-card-title>
-            <q-parallax :src="`${$http.defaults.baseURL}/media/${upload.pic}`" :height="150">
-            </q-parallax>
-          </q-card-media>
-          <q-card-title v-else>
+          </div>
+        </q-card-main>
+        <q-card-media v-if="upload.pic" overlay-position="bottom">
+          <q-card-title slot="overlay">
             Other data
           </q-card-title>
-          <q-card-main>
-            <p>ID: {{ upload._id }}</p>
-          </q-card-main>
-        </q-card>
-      </div>
-      <div v-else key="loader">
-        <q-spinner size="50"></q-spinner> Loading mod data...
-      </div>
-    </q-transition>
+          <q-parallax :src="`${$http.defaults.baseURL}/media/${upload.pic}`" :height="150">
+          </q-parallax>
+        </q-card-media>
+        <q-card-title v-else>
+          Other data
+        </q-card-title>
+        <q-card-main>
+          <p>ID: {{ upload._id }}</p>
+        </q-card-main>
+      </q-card>
+    </div>
+    <div v-else>
+      <q-spinner size="50"></q-spinner> Loading mod data...
+    </div>
   </div>
 </template>
 
@@ -176,26 +173,10 @@
         },
         immediate: true,
       },
-      upload: {
-        handler (val, oldVal) {
-          let that = this
-          if (val && val !== oldVal) {
-            for (let d of val.dependency) {
-              this.$http.get(`/uploads/${d}`).then(response => {
-                let upload = response.data
-                that.$set(that.dependencies, upload._id, upload)
-              })
-            }
-          }
-        },
-        immediate: true,
-      },
     },
     data () {
       return {
         upload: null,
-        dependencies: {},
-        fileData: {},
         downloadProgresses: {},
       }
     },
