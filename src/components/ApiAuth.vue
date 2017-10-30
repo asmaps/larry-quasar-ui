@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="!$store.state.decodedToken.username">
+    <div v-if="!$store.getters.loggedIn">
       <div v-if="useLarryLogin" class="group">
         <h5>Larry Login</h5>
         <div>

@@ -17,6 +17,13 @@
         Larry Web
         <div slot="subtitle">Official source of mods for OpenClonk</div>
       </q-toolbar-title>
+
+      <q-toolbar-title v-if="$store.getters.loggedIn">
+        Hi {{ $store.state.decodedToken.username }}
+      </q-toolbar-title>
+      <q-btn flat icon="fa-sign-out" v-if="$store.getters.loggedIn" @click="$store.commit('logout')">
+        Logout
+      </q-btn>
     </q-toolbar>
 
     <q-tabs slot="navigation">
@@ -45,7 +52,7 @@
         <div class="col">
           <router-view></router-view>
         </div>
-        <div class="col-auto">
+        <div class="col-auto" v-if="!$store.getters.loggedIn">
           <api-auth></api-auth>
         </div>
       </div>
