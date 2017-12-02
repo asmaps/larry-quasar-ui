@@ -108,7 +108,7 @@
               color: 'negative',
               outline: true,
               handler () {
-                this.$http.delete(`/uploads/${upload._id}`).then(response => that.refresh())
+                that.$http.delete(`/uploads/${upload._id}`).then(response => that.refresh())
               }
             }
           ]
