@@ -23,6 +23,9 @@
           </p>
         </q-card-main>
         <q-card-actions>
+          <a :href="`openclonk://installmod/${upload._id}`">
+            Install mod with OpenClonk
+          </a>
           <q-btn v-if="$store.state.decodedToken.username === upload.author.username"
                  outline
                  color="negative"
