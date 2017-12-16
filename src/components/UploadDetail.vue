@@ -23,9 +23,9 @@
           </p>
         </q-card-main>
         <q-card-actions>
-          <a :href="`openclonk://installmod/${upload._id}`">
+          <q-btn @click="openInOpenclonk" color="positive" outline>
             Install mod with OpenClonk
-          </a>
+          </q-btn>
           <q-btn v-if="$store.state.decodedToken.username === upload.author.username"
                  outline
                  color="negative"
@@ -142,7 +142,8 @@
     QIcon,
     QParallax,
     QTransition,
-    QSpinner
+    QSpinner,
+    openURL,
   } from 'quasar'
   import UploadVoter from './UploadVoter'
   import FileSaver from 'file-saver'
@@ -232,6 +233,9 @@
         this.downloadProgresses[mediaId].percentage = progressEvent.loaded * 100 / progressEvent.total
         this.downloadProgresses[mediaId].loaded = progressEvent.loaded
         this.downloadProgresses[mediaId].total = progressEvent.total
+      },
+      openInOpenclonk () {
+        openURL(`openclonk://installmod/${this.upload._id}`)
       }
     }
   }
